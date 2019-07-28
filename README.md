@@ -10,3 +10,5 @@ As it is Spring Boot Application, IDEA will automatically configure the setup. T
 To run client, first run npm install and then start client by npm start.
 
 As database is H2-disk based, no need extra config for database. Initially some dummy data will be inserted. 
+
+After running the application, register an account from register option.
