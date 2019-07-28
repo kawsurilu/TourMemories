@@ -6,7 +6,17 @@
         <h1 class="display-4">Welcome to Tour Memories!</h1>
         <p class="lead">A place where you can recall all your tour memories</p>
 
-        <div [ngSwitch]="isAuthenticated()">
+        <div class="table-responsive" *ngIf="statuses">
+            <table class="table table-striped">
+                <tr *ngFor="let status of statuses">
+                    <td>{{status.loginId}}
+                        <br /><br />
+                        {{status.statusText}}
+                        <br /><br />
+                        - at {{status.locations ? status.locations.location : "Unknown"}}
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 

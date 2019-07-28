@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { SERVER_API_URL } from 'app/app.constants';
 import { createRequestOption } from 'app/shared';
-import { IStatus } from 'app/shared/model/status.model';
+import {IStatus, PrivacyCategories} from 'app/shared/model/status.model';
 
 type EntityResponseType = HttpResponse<IStatus>;
 type EntityArrayResponseType = HttpResponse<IStatus[]>;
@@ -25,6 +25,14 @@ export class StatusService {
 
   find(id: number): Observable<EntityResponseType> {
     return this.http.get<IStatus>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  getByLoginId(loginId: string): Observable<EntityArrayResponseType> {
+    return this.http.get<IStatus[]>(`${this.resourceUrl}/loginId/${loginId}`, { observe: 'response' });
+  }
+
+  getByPrivacy(privacy: PrivacyCategories): Observable<EntityArrayResponseType> {
+    return this.http.get<IStatus[]>(`${this.resourceUrl}/privacy/${privacy}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {

@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { JhiAlertService, JhiDataUtils } from 'ng-jhipster';
-import { IStatus, Status } from 'app/shared/model/status.model';
-import { StatusService } from './status.service';
-import { ILocation } from 'app/shared/model/location.model';
-import { LocationService } from 'app/entities/location';
+import {Component, OnInit} from '@angular/core';
+import {HttpErrorResponse, HttpResponse} from '@angular/common/http';
+import {FormBuilder, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+import {JhiAlertService, JhiDataUtils} from 'ng-jhipster';
+import {IStatus, PinnedPostCategories, Status} from 'app/shared/model/status.model';
+import {StatusService} from './status.service';
+import {ILocation} from 'app/shared/model/location.model';
+import {LocationService} from 'app/entities/location';
+import {Account, AccountService} from "app/core";
 
 @Component({
   selector: 'jhi-status-update',
@@ -18,14 +19,16 @@ export class StatusUpdateComponent implements OnInit {
   isSaving: boolean;
 
   locations: ILocation[];
+  statuses: IStatus[];
+  pinnedStatuses: IStatus[];
+  account: Account;
 
   editForm = this.fb.group({
     id: [],
     statusText: [null, [Validators.required]],
     privacy: [null, [Validators.required]],
     pinnedStatus: [null, [Validators.required]],
-    loginId: [null, [Validators.required]],
-    locations: []
+    locations: [null, [Validators.required]]
   });
 
   constructor(
@@ -34,21 +37,28 @@ export class StatusUpdateComponent implements OnInit {
     protected statusService: StatusService,
     protected locationService: LocationService,
     protected activatedRoute: ActivatedRoute,
+    private accountService: AccountService,
+    private router: Router,
     private fb: FormBuilder
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
-    this.isSaving = false;
-    this.activatedRoute.data.subscribe(({ status }) => {
-      this.updateForm(status);
+    this.accountService.identity().then((account: Account) => {
+      this.account = account;
+      this.isSaving = false;
+      this.getStatusByLoginId(this.account.login);
+      this.activatedRoute.data.subscribe(({status}) => {
+        this.updateForm(status);
+      });
+      this.locationService
+        .query()
+        .pipe(
+          filter((mayBeOk: HttpResponse<ILocation[]>) => mayBeOk.ok),
+          map((response: HttpResponse<ILocation[]>) => response.body)
+        )
+        .subscribe((res: ILocation[]) => (this.locations = res), (res: HttpErrorResponse) => this.onError(res.message));
     });
-    this.locationService
-      .query()
-      .pipe(
-        filter((mayBeOk: HttpResponse<ILocation[]>) => mayBeOk.ok),
-        map((response: HttpResponse<ILocation[]>) => response.body)
-      )
-      .subscribe((res: ILocation[]) => (this.locations = res), (res: HttpErrorResponse) => this.onError(res.message));
   }
 
   updateForm(status: IStatus) {
@@ -94,8 +104,29 @@ export class StatusUpdateComponent implements OnInit {
     );
   }
 
+  getStatusByLoginId(loginId: string) {
+    this.statuses = [];
+    this.pinnedStatuses = [];
+    this.statusService.getByLoginId(this.accountService.getLoginId())
+      .pipe(
+        filter((res: HttpResponse<IStatus[]>) => res.ok),
+        map((res: HttpResponse<IStatus[]>) => res.body)
+      )
+      .subscribe(
+        (res: IStatus[]) => {
+          for(let i = 0; i < res.length; i++) {
+            if(res[i].pinnedStatus.toString() === PinnedPostCategories.PINNED.toString())
+              this.pinnedStatuses.push(res[i]);
+            else
+              this.statuses.push(res[i]);
+          }
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+      );
+  }
+
   previousState() {
-    window.history.back();
+    this.router.navigate(['/status/new']);
   }
 
   save() {
@@ -115,7 +146,7 @@ export class StatusUpdateComponent implements OnInit {
       statusText: this.editForm.get(['statusText']).value,
       privacy: this.editForm.get(['privacy']).value,
       pinnedStatus: this.editForm.get(['pinnedStatus']).value,
-      loginId: this.editForm.get(['loginId']).value,
+      loginId: this.account.login,
       locations: this.editForm.get(['locations']).value
     };
   }
@@ -126,12 +157,14 @@ export class StatusUpdateComponent implements OnInit {
 
   protected onSaveSuccess() {
     this.isSaving = false;
+    this.editForm.reset();
     this.previousState();
   }
 
   protected onSaveError() {
     this.isSaving = false;
   }
+
   protected onError(errorMessage: string) {
     this.jhiAlertService.error(errorMessage, null, null);
   }

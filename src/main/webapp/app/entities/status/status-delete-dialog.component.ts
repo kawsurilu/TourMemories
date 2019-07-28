@@ -14,7 +14,8 @@ import { StatusService } from './status.service';
 export class StatusDeleteDialogComponent {
   status: IStatus;
 
-  constructor(protected statusService: StatusService, public activeModal: NgbActiveModal, protected eventManager: JhiEventManager) {}
+  constructor(protected statusService: StatusService, public activeModal: NgbActiveModal,
+              private router: Router, protected eventManager: JhiEventManager) {}
 
   clear() {
     this.activeModal.dismiss('cancel');
@@ -27,6 +28,7 @@ export class StatusDeleteDialogComponent {
         content: 'Deleted an status'
       });
       this.activeModal.dismiss(true);
+      this.router.navigate(['/status/new']);
     });
   }
 }

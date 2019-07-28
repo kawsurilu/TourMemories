@@ -1,6 +1,8 @@
 package org.tourmemories.web.rest;
 
 import org.tourmemories.domain.Status;
+import org.tourmemories.domain.enumeration.PinnedPostCategories;
+import org.tourmemories.domain.enumeration.PrivacyCategories;
 import org.tourmemories.repository.StatusRepository;
 import org.tourmemories.web.rest.errors.BadRequestAlertException;
 
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,10 +55,27 @@ public class StatusResource {
         if (status.getId() != null) {
             throw new BadRequestAlertException("A new status cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        makeExistingPinnedPostToUnPinned(status);
         Status result = statusRepository.save(status);
         return ResponseEntity.created(new URI("/api/statuses/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+    private void makeExistingPinnedPostToUnPinned(@RequestBody @Valid Status status) {
+        if(status.getPinnedStatus().equals(PinnedPostCategories.PINNED)) {
+            List<Status> statuses = statusRepository.findAll();
+            List<Status> existingPinnedPost = new ArrayList<>();
+            for(Status status1: statuses){
+                if(status1.getPinnedStatus().equals(PinnedPostCategories.PINNED)){
+                    existingPinnedPost.add(status1);
+                }
+            }
+            for(Status status1: existingPinnedPost){
+                status1.setPinnedStatus(PinnedPostCategories.UNPINNED);
+                statusRepository.save(status1);
+            }
+        }
     }
 
     /**
@@ -73,6 +93,7 @@ public class StatusResource {
         if (status.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        makeExistingPinnedPostToUnPinned(status);
         Status result = statusRepository.save(status);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, status.getId().toString()))
@@ -88,6 +109,18 @@ public class StatusResource {
     public List<Status> getAllStatuses() {
         log.debug("REST request to get all Statuses");
         return statusRepository.findAll();
+    }
+
+    @GetMapping("/statuses/loginId/{loginId}")
+    public List<Status> getAllStatuses(@PathVariable String loginId) {
+        log.debug("REST request to get all Statuses by login id: {}", loginId);
+        return statusRepository.getByLoginId(loginId);
+    }
+
+    @GetMapping("/statuses/privacy/{privacy}")
+    public List<Status> getAllStatuses(@PathVariable PrivacyCategories privacy) {
+        log.debug("REST request to get all Statuses by privacy: {}", privacy);
+        return statusRepository.getByPrivacy(privacy);
     }
 
     /**
