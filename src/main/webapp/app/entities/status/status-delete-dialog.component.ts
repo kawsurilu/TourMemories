@@ -28,7 +28,6 @@ export class StatusDeleteDialogComponent {
         content: 'Deleted an status'
       });
       this.activeModal.dismiss(true);
-      this.router.navigate(['/status/new']);
     });
   }
 }
