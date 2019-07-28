@@ -1,0 +1,45 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="status">
+            <h2><span>Status</span> {{status.id}}</h2>
+            <hr>
+            <jhi-alert-error></jhi-alert-error>
+            <dl class="row-md jh-entity-details">
+                <dt><span>Status Text</span></dt>
+                <dd>
+                    <span>{{status.statusText}}</span>
+                </dd>
+                <dt><span>Privacy</span></dt>
+                <dd>
+                    <span>{{status.privacy}}</span>
+                </dd>
+                <dt><span>Pinned Status</span></dt>
+                <dd>
+                    <span>{{status.pinnedStatus}}</span>
+                </dd>
+                <dt><span>Login Id</span></dt>
+                <dd>
+                    <span>{{status.loginId}}</span>
+                </dd>
+                <dt><span>Locations</span></dt>
+                <dd>
+                    <div *ngIf="status.locations">
+                        <a [routerLink]="['/location', status.locations?.id, 'view']">{{status.locations?.location}}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon [icon]="'arrow-left'"></fa-icon>&nbsp;<span> Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/status', status.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon [icon]="'pencil-alt'"></fa-icon>&nbsp;<span> Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

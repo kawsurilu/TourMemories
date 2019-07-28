@@ -1,0 +1,79 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-status-heading">Create or edit a Status</h2>
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+                <div class="form-group" [hidden]="!editForm.get('id').value">
+                    <label for="id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id"
+                        readonly />
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_statusText">Status Text</label>
+                    <textarea class="form-control" name="statusText" id="field_statusText"
+                              formControlName="statusText"></textarea>
+                    <div *ngIf="editForm.get('statusText').invalid && (editForm.get('statusText').dirty || editForm.get('statusText').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('statusText').errors.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_privacy">Privacy</label>
+                    <select class="form-control" name="privacy" formControlName="privacy" id="field_privacy">
+                        <option value="PUBLIC">PUBLIC</option>
+                        <option value="PRIVATE">PRIVATE</option>
+                    </select>
+                    <div *ngIf="editForm.get('privacy').invalid && (editForm.get('privacy').dirty || editForm.get('privacy').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('privacy').errors.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_pinnedStatus">Pinned Status</label>
+                    <select class="form-control" name="pinnedStatus" formControlName="pinnedStatus" id="field_pinnedStatus">
+                        <option value="PINNED">PINNED</option>
+                        <option value="UNPINNED">UNPINNED</option>
+                    </select>
+                    <div *ngIf="editForm.get('pinnedStatus').invalid && (editForm.get('pinnedStatus').dirty || editForm.get('pinnedStatus').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('pinnedStatus').errors.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-control-label" for="field_loginId">Login Id</label>
+                    <input type="text" class="form-control" name="loginId" id="field_loginId"
+                           formControlName="loginId"/>
+                    <div *ngIf="editForm.get('loginId').invalid && (editForm.get('loginId').dirty || editForm.get('loginId').touched)">
+                        <small class="form-text text-danger"
+                               *ngIf="editForm.get('loginId').errors.required">
+                        This field is required.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" for="field_locations">Locations</label>
+                    <select class="form-control" id="field_locations" name="locations" formControlName="locations">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="locationOption.id === editForm.get('locations').value?.id ? editForm.get('locations').value : locationOption" *ngFor="let locationOption of locations; trackBy: trackLocationById">{{locationOption.location}}</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary"  (click)="previousState()">
+                    <fa-icon [icon]="'ban'"></fa-icon>&nbsp;<span>Cancel</span>
+                </button>
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon [icon]="'save'"></fa-icon>&nbsp;<span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

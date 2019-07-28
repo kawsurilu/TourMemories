@@ -1,0 +1,54 @@
+{
+    "name": "Status",
+    "fields": [
+        {
+            "fieldName": "statusText",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "text",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "privacy",
+            "fieldType": "PrivacyCategories",
+            "fieldValues": "PUBLIC,PRIVATE",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "pinnedStatus",
+            "fieldType": "PinnedPostCategories",
+            "fieldValues": "PINNED,UNPINNED",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "loginId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "otherEntityName": "location",
+            "otherEntityRelationshipName": "status",
+            "relationshipName": "locations",
+            "otherEntityField": "location"
+        }
+    ],
+    "changelogDate": "20190728094906",
+    "entityTableName": "status",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

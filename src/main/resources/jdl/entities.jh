@@ -1,0 +1,22 @@
+entity Location {
+	location String required minlength(2) maxlength(30)
+}
+
+entity Status {
+	StatusText TextBlob required
+    Privacy PrivacyCategories required,
+    PinnedStatus PinnedPostCategories required,
+    LoginId String required
+}
+
+enum PrivacyCategories {
+	PUBLIC, PRIVATE
+}
+
+enum PinnedPostCategories {
+	PINNED, UNPINNED
+}
+
+relationship ManyToOne {
+	Status{locations(location)} to Location
+}
