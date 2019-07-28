@@ -45,6 +45,10 @@ export class NavbarComponent implements OnInit {
     return this.accountService.isAuthenticated();
   }
 
+  getLoginId() {
+    return this.accountService.getLoginId();
+  }
+
   login() {
     this.modalRef = this.loginModalService.open();
   }

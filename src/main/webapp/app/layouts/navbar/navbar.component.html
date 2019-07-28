@@ -8,6 +8,15 @@
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed" [ngSwitch]="isAuthenticated()">
         <ul class="navbar-nav ml-auto">
+            <li *ngIf="getLoginId()" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
+                    <span>
+                        <fa-icon icon="user"></fa-icon>
+                        <span>{{getLoginId()}}</span>
+                    </span>
+                </a>
+            </li>
+
             <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
                     <span>
@@ -17,7 +26,7 @@
                 </a>
             </li>
             <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
-            <li *ngSwitchCase="true" ngbDropdown class="nav-item dropdown pointer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+            <li *jhiHasAnyAuthority="'ROLE_ADMIN'" ngbDropdown class="nav-item dropdown pointer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu">
                     <span>
                         <fa-icon icon="th-list"></fa-icon>
@@ -92,7 +101,7 @@
             <li ngbDropdown class="nav-item dropdown pointer" placement="bottom-right" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
                 <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu">
                   <span *ngIf="!getImageUrl()">
-                    <fa-icon icon="user"></fa-icon>
+                    <fa-icon icon="wrench"></fa-icon>
                     <span>
                       Account
                     </span>

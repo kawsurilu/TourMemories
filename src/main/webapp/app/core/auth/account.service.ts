@@ -98,6 +98,9 @@ export class AccountService {
     return this.userIdentity !== undefined;
   }
 
+  getLoginId(): string {
+    return this.authenticated && this.userIdentity ? this.userIdentity.login : undefined;
+  }
   getAuthenticationState(): Observable<any> {
     return this.authenticationState.asObservable();
   }
